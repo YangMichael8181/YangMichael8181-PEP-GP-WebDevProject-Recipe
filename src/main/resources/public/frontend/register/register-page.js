@@ -4,15 +4,13 @@
 
 const BASE_URL = "http://localhost:8081"; // backend URL
 
-/* 
- * TODO: Get references to various DOM elements
- * - usernameInput, emailInput, passwordInput, repeatPasswordInput, registerButton
- */
+let usernameInput = document.getElementById("username-input");
+let emailInput = document.getElementById("email-input");
+let passwordInput = document.getElementById("password-input");
+let repeatPasswordInput = document.getElementById("repeat-password-input");
+let registerButton = document.getElementById("register-button");
 
-
-/* 
- * TODO: Ensure the register button calls processRegistration when clicked
- */
+registerButton.addEventListener("click", processRegistration);
 
 
 /**
@@ -40,10 +38,35 @@ const BASE_URL = "http://localhost:8081"; // backend URL
  */
 async function processRegistration() {
     // Implement registration logic here
+    let username = usernameInput.value;
+    let email = emailInput.value;
+    let password = passwordInput.value;
+    let repeatPassword = repeatPasswordInput.value;
 
-    // Example placeholder:
-    // const registerBody = { username, email, password };
-const requestOptions = {
+    if (username.length === 0)
+    {
+        alert("No username provided");
+        return;
+    }
+
+    if (email.length === 0)
+    {
+        alert("No email provided");
+        return;
+    }
+    if (password.length === 0)
+    {
+        alert("No password provided");
+        return;
+    }
+    if (repeatPassword.length === 0 || password !== repeatPassword)
+    {
+        alert("Passwords do not match");
+        return;
+    }
+
+    const registerBody = {username, email, password};
+    const requestOptions = {
         method: "POST",
         mode: "cors",
         cache: "no-cache",
@@ -57,5 +80,23 @@ const requestOptions = {
         referrerPolicy: "no-referrer",
         body: JSON.stringify(registerBody)
     };
-    // await fetch(...)
+
+    try
+    {
+        const response = await fetch(`${BASE_URL}/register`, requestOptions);
+        if (!response.ok)
+        {
+            if (response.status == 409) alert("Username and Email already exist");
+            else alert("Failed to register, please try again");
+            return;
+        }
+        window.location.href = `${BASE_URL}/login`;
+    }
+    catch (error)
+    {
+        alert("Failed to register, please try again");
+        console.log(error);
+    }
+
+
 }
